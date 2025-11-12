@@ -17,8 +17,10 @@ namespace MunicipalityApplicatiion.Repositories
         private readonly Stack<EventItem> _recentlyViewed = new();
         private readonly int _recentSearchLimit = 50;
 
+        // Expose categories
         public IEnumerable<string> Categories => _categories.OrderBy(c => c);
 
+        // Add new event
         public void AddEvent(EventItem e)
         {
             if (e == null) throw new ArgumentNullException(nameof(e));
@@ -43,15 +45,28 @@ namespace MunicipalityApplicatiion.Repositories
                 _featuredQueue.Enqueue(e, e.EventDate);
         }
 
+        // Get all upcoming events
         public IEnumerable<EventItem> GetAllUpcomingEvents() =>
             _eventsByDate.SelectMany(kvp => kvp.Value).OrderBy(e => e.EventDate);
 
+        // Search events by query, category, and date
         public IEnumerable<EventItem> Search(string query, string category = null, DateTime? date = null)
         {
             var q = (query ?? string.Empty).Trim();
-            IEnumerable<EventItem> source = string.IsNullOrWhiteSpace(category)
-                ? _eventsByDate.SelectMany(kvp => kvp.Value)
-                : _eventsByCategory.TryGetValue(category, out var catList) ? catList : Enumerable.Empty<EventItem>();
+            IEnumerable<EventItem> source;
+
+            if (string.IsNullOrWhiteSpace(category))
+            {
+                source = _eventsByDate.SelectMany(kvp => kvp.Value);
+            }
+            else if (_eventsByCategory.TryGetValue(category, out var catList))
+            {
+                source = catList;
+            }
+            else
+            {
+                source = Enumerable.Empty<EventItem>();
+            }
 
             if (date.HasValue)
                 source = source.Where(e => e.EventDate.Date == date.Value.Date);
@@ -69,10 +84,13 @@ namespace MunicipalityApplicatiion.Repositories
             return source.OrderBy(e => e.EventDate);
         }
 
-        // Save searched
+        // Record recent searches
         private void RecordSearch(string q)
         {
+            if (string.IsNullOrWhiteSpace(q)) return;
+
             _recentSearches.Enqueue(q);
+
             while (_recentSearches.Count > _recentSearchLimit)
                 _recentSearches.Dequeue();
         }
@@ -167,7 +185,7 @@ namespace MunicipalityApplicatiion.Repositories
                 EventCategory = "Market",
                 EventDate = DateTime.Today.AddDays(5),
                 IsFeatured = true,
-                ImagePath = @"Resources\market.jpg"
+                ImagePath = @"Resources/markets.jpg"
             });
 
             // Event 3

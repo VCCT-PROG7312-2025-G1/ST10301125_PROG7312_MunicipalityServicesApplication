@@ -18,8 +18,7 @@ namespace MunicipalityApplicatiion.UI
     public partial class ReportIssue : Form
 
     {
-
-        // ADD: optional shared repo reference (nullable on purpose)
+        // Repository reference
         private ServiceRequestRepository? _repo;
 
         public ReportIssue(ServiceRequestRepository repo) : this()
@@ -30,7 +29,7 @@ namespace MunicipalityApplicatiion.UI
 
         public ReportIssue()
         {
-            InitializeComponent();    // <-- ensure designer-created controls exist
+            InitializeComponent(); 
 
             Text = "Report Issue";
             MinimumSize = new Size(900, 700);
@@ -48,15 +47,16 @@ namespace MunicipalityApplicatiion.UI
             comboBox1.SelectedIndexChanged += UpdateProgress;
             txtDescription.TextChanged += UpdateProgress;
             listAttachments.SelectedIndexChanged += UpdateProgress;
-        }
 
+
+        }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
 
         }
 
-        // ADD: owner-draw so items are visible with OwnerDrawFixed
+        // Custom draw event for combo box items to handle placeholder styling
         private void ComboBox1_DrawItem(object? sender, DrawItemEventArgs e)
         {
             e.DrawBackground();
@@ -94,6 +94,7 @@ namespace MunicipalityApplicatiion.UI
             }
         }
 
+        // Event handler when the description TextBox loses focus
         private void textDescription_Leave(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtDescription.Text))
@@ -259,7 +260,7 @@ namespace MunicipalityApplicatiion.UI
             // Save
             _repo?.Add(req);
 
-            // Success message WITH ID (and optional clipboard copy)
+            // Success message WITH ID 
             try { Clipboard.SetText(req.RequestId); } catch { /* ignore clipboard failures */ }
 
             MessageBox.Show(
@@ -272,8 +273,6 @@ namespace MunicipalityApplicatiion.UI
             // Close and return to menu
             this.Close();
         }
-
-
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -306,6 +305,11 @@ namespace MunicipalityApplicatiion.UI
         }
 
         private void btnBack_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_Click_1(object sender, EventArgs e)
         {
 
         }

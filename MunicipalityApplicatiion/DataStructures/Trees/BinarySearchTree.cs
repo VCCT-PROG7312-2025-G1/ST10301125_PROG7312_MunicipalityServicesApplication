@@ -28,6 +28,7 @@ namespace MunicipalityApplicatiion.DataStructures
             _root = InsertInternal(_root, key, value);
         }
 
+        // Insert helper
         private Node InsertInternal(Node? node, TKey key, TValue value)
         {
             if (node == null)
@@ -39,12 +40,12 @@ namespace MunicipalityApplicatiion.DataStructures
             else if (cmp > 0)
                 node.Right = InsertInternal(node.Right, key, value);
             else
-                node.Value = value; // update existing
+                node.Value = value; 
 
             return node;
         }
 
-        // ✅ Match the repository signature
+        // Repository lookup
         public bool TryGetValue(TKey key, out TValue value)
         {
             var cur = _root;
@@ -63,7 +64,7 @@ namespace MunicipalityApplicatiion.DataStructures
             return false;
         }
 
-        // In-order traversal (values only)
+        // In-order traversal
         public IEnumerable<TValue> InOrder()
         {
             var stack = new Stack<Node>();
@@ -83,7 +84,7 @@ namespace MunicipalityApplicatiion.DataStructures
             }
         }
 
-        // (Optional) In-order traversal with keys if you ever need both
+        // In-order traversal with keys
         public IEnumerable<(TKey Key, TValue Value)> InOrderPairs()
         {
             var stack = new Stack<Node>();

@@ -31,6 +31,7 @@ namespace MunicipalityApplicatiion.DataStructures.Trees
             n.Height = Math.Max(Height(n.Left), Height(n.Right)) + 1;
         }
 
+        // Rotations (Right)
         private AvlNode<TKey, TValue> RotateRight(AvlNode<TKey, TValue> y)
         {
             var x = y.Left!;
@@ -42,6 +43,7 @@ namespace MunicipalityApplicatiion.DataStructures.Trees
             return x;
         }
 
+        // Rotations (Left)
         private AvlNode<TKey, TValue> RotateLeft(AvlNode<TKey, TValue> x)
         {
             var y = x.Right!;
@@ -53,11 +55,13 @@ namespace MunicipalityApplicatiion.DataStructures.Trees
             return y;
         }
 
+        // Insertion
         public void Insert(TKey key, TValue value)
         {
             Root = Insert(Root, key, value);
         }
 
+        // Insertion with balancing
         private AvlNode<TKey, TValue> Insert(AvlNode<TKey, TValue>? n, TKey k, TValue v)
         {
             if (n == null)
@@ -92,6 +96,7 @@ namespace MunicipalityApplicatiion.DataStructures.Trees
             return n;
         }
 
+        // Search
         public bool TryGet(TKey key, out TValue value)
         {
             var n = Root;
@@ -110,7 +115,7 @@ namespace MunicipalityApplicatiion.DataStructures.Trees
             return false;
         }
 
-        // ===== ADDED: InOrder traversal to enumerate values in key order =====
+        // In-order traversal
         public IEnumerable<TValue> InOrder()
         {
             var stack = new Stack<AvlNode<TKey, TValue>>();

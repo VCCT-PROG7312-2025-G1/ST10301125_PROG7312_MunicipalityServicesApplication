@@ -45,20 +45,31 @@ namespace MunicipalityApplicatiion.Forms
                 BackColor = Color.OldLace
             };
 
+            // ===== Logo =====
+            PictureBox pbLogo = new PictureBox
+            {
+                Image = MunicipalityApplicatiion.Properties.Resources.MunicipalityCover, // resource image
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                Width = 80,
+                Height = 80,
+                Location = new Point(20, 5) // adjust vertical position to align with text
+            };
+            headerPanel.Controls.Add(pbLogo);
+
             // Back Button — top right corner
             btnBack = new Button
             {
                 Text = "⬅︎ Back to Main Menu",
-                Width = 180,
+                Width = 160,
                 Height = 35,
                 BackColor = Color.White,
                 UseVisualStyleBackColor = true,
                 ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Standard,
-                Location = new Point(20, 14),
+                Location = new Point(20, 25),
                 Font = new Font("Verdana", 9, FontStyle.Bold),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                Padding = new Padding(5)
+                Padding = new Padding(3)
             };
 
             btnBack.Click += (s, e) => Close();
@@ -70,8 +81,8 @@ namespace MunicipalityApplicatiion.Forms
                 BackColor = Color.OldLace,
                 Font = new Font("Verdana", 20F, FontStyle.Bold),
                 Text = "Service Request Status",
-                Location = new Point(20, 14),
-                Width = 700
+                Location = new Point(120, 14),
+                Width = 500
             };
 
 
@@ -81,8 +92,8 @@ namespace MunicipalityApplicatiion.Forms
                 BackColor = Color.OldLace,
                 Font = new Font("Verdana", 9F, FontStyle.Italic),
                 Text = "Track municipal requests and view progress in real time.",
-                Location = new Point(22, 54),
-                Width = 700
+                Location = new Point(120, 54),
+                Width = 500
             };
 
 

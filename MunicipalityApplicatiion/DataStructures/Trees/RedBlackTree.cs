@@ -19,6 +19,7 @@
     {
         public RbNode<TKey, TValue>? Root { get; private set; }
 
+        // Rotations (Left)
         void RotateLeft(RbNode<TKey, TValue> x)
         {
             var y = x.Right!;
@@ -30,6 +31,7 @@
             y.Left = x; x.Parent = y;
         }
 
+        // Rotations (Right)
         void RotateRight(RbNode<TKey, TValue> y)
         {
             var x = y.Left!;
@@ -41,6 +43,7 @@
             x.Right = y; y.Parent = x;
         }
 
+        // Insertion
         public void Insert(TKey key, TValue value)
         {
             var z = new RbNode<TKey, TValue>(key, value);
@@ -58,6 +61,7 @@
             InsertFixup(z);
         }
 
+        // Insertion Fixup
         void InsertFixup(RbNode<TKey, TValue> z)
         {
             while (z.Parent != null && z.Parent.Color == RbColor.Red)
@@ -102,6 +106,7 @@
             Root!.Color = RbColor.Black;
         }
 
+        // Search
         public bool TryGet(TKey key, out TValue value)
         {
             var n = Root;

@@ -17,7 +17,7 @@ namespace MunicipalityApplicatiion.Repositories
 
         private readonly List<ServiceRequest> _all;
 
-        // ✅ Add this event so forms can react to repository changes
+        // Forms can react to repository changes
         public event EventHandler? Changed;
 
         // Helper to safely raise the event
@@ -26,9 +26,39 @@ namespace MunicipalityApplicatiion.Repositories
         public ServiceRequestRepository(IEnumerable<ServiceRequest> requests = null)
         {
             _all = requests?.ToList() ?? new List<ServiceRequest>();
+
+            if (!_all.Any())
+                SeedDemoData();
+
             Build();
         }
 
+        // Seed with demo data of 15 reports
+        private void SeedDemoData()
+        {
+            var rand = new Random();
+            var locations = new[] { "Cape Town", "City Centre", "School", "Hospital", "Station" };
+            var categories = new[] { "Sanitation", "Roads", "Utilities", "Safety", "Other" };
+
+            for (int i = 1; i <= 15; i++)
+            {
+                var req = new ServiceRequest
+                {
+                    RequestId = Guid.NewGuid().ToString(),
+                    Title = $"{categories[rand.Next(categories.Length)]} issue #{i}",
+                    Description = $"This is a demo description for issue #{i}.",
+                    Priority = rand.Next(1, 5),
+                    Status = (RequestStatus)rand.Next(0, Enum.GetValues(typeof(RequestStatus)).Length),
+                    LocationNode = locations[rand.Next(locations.Length)],
+                    CreatedAt = DateTime.Now.AddDays(-rand.Next(30)),
+                    UpdatedAt = DateTime.Now.AddDays(-rand.Next(10)) 
+                };
+
+                _all.Add(req);
+            }
+        }
+
+        // CRUD Operations
         public void Add(ServiceRequest request)
         {
             if (request == null || string.IsNullOrEmpty(request.RequestId))
@@ -40,9 +70,10 @@ namespace MunicipalityApplicatiion.Repositories
             _rbtByTitle.Insert(request.Title ?? string.Empty, request);
             _priorityQueue.Insert(request, request.Priority);
 
-            OnChanged(); // ✅ Notify subscribers
+            OnChanged(); 
         }
 
+        // Update existing request
         public void Update(ServiceRequest updated)
         {
             if (updated == null || string.IsNullOrEmpty(updated.RequestId))
@@ -51,17 +82,17 @@ namespace MunicipalityApplicatiion.Repositories
             var existing = _all.FirstOrDefault(x => x.RequestId == updated.RequestId);
             if (existing != null)
             {
-                // Replace the old one
                 _all.Remove(existing);
                 _all.Add(updated);
 
                 _priorityQueue.Clear();
                 Build();
 
-                OnChanged(); // ✅ Notify subscribers
+                OnChanged(); 
             }
         }
 
+        // Delete request by ID
         public void Delete(string requestId)
         {
             var existing = _all.FirstOrDefault(x => x.RequestId == requestId);
@@ -72,10 +103,11 @@ namespace MunicipalityApplicatiion.Repositories
                 _priorityQueue.Clear();
                 Build();
 
-                OnChanged(); // ✅ Notify subscribers
+                OnChanged(); 
             }
         }
 
+        // Build data structures from the current list
         private void Build()
         {
             foreach (var r in _all)
@@ -100,22 +132,28 @@ namespace MunicipalityApplicatiion.Repositories
             }
         }
 
+        // Generate a unique time-based key
         private static long TimeKey(DateTime dt, string id)
         {
             return dt.Ticks * 1000 + (id.GetHashCode() & 0xFFF);
         }
 
+        // Query Operations
         public bool TryFindById(string requestId, out ServiceRequest request) =>
             _bstById.TryGetValue(requestId, out request);
 
+        // Alias for TryFindById
         public bool TryGet(string requestId, out ServiceRequest request) =>
             TryFindById(requestId, out request);
 
+        // In-order traversal by creation date
         public IEnumerable<ServiceRequest> InOrderByCreatedDate() => _avlByTimeKey.InOrder();
 
+        // Find by title
         public bool TryFindByTitle(string title, out ServiceRequest request) =>
             _rbtByTitle.TryGet(title ?? string.Empty, out request);
 
+        // Alias for Most Urgent request (priority queue)
         public IEnumerable<ServiceRequest> MostUrgent(int max = 5)
         {
             var result = new List<ServiceRequest>();
@@ -127,18 +165,21 @@ namespace MunicipalityApplicatiion.Repositories
             return result;
         }
 
+        // Graph operations
         public IEnumerable<string> AreaBfs()
         {
             if (!_all.Any()) return Enumerable.Empty<string>();
             return _areaGraph.BfsFrom(0);
         }
 
+        // Minimum Spanning Tree edges
         public IEnumerable<(string U, string V, double W)> AreaMst()
         {
             var edges = _areaGraph.MinimumSpanningTree();
             return edges.Select(e => (U: e.U.ToString(), V: e.V.ToString(), W: e.W));
         }
 
+        // Get all requests
         public IEnumerable<ServiceRequest> All() => _all;
     }
 }

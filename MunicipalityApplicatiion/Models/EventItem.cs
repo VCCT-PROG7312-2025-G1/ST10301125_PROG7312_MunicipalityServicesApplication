@@ -8,7 +8,7 @@ namespace MunicipalityApplicatiion.Models
 {
     public class EventItem
     {
-        public int EventId { get; set; }
+        public int EventId { get; set; } // unique identifier
         public required string EventTitle { get; set; }
         public string? EventDescription { get; set; }
         public required string EventCategory { get; set; }

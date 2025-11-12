@@ -4,25 +4,16 @@ using System.Threading;
 
 namespace MunicipalityApplicatiion.DataStructures
 {
-    /// <summary>
-    /// A priority queue that stores items along with a priority value.
-    /// Higher priority values are dequeued before lower ones.
-    /// </summary>
-    /// <typeparam name="T">The type of elements stored in the queue.</typeparam>
     public class PriorityQueue<T>
     {
         // List to store items with their priority and insertion sequence
         private readonly List<(T item, int priority, long seq)> _data = new();
         private static long _seqGen = 0;
 
-        /// <summary>
-        /// Returns the number of items in the queue.
-        /// </summary>
+        // Returns the number of items in the queue.
         public int Count => _data.Count;
 
-        /// <summary>
-        /// Inserts an item with a given priority.
-        /// </summary>
+        // Inserts an item with a given priority.
         public void Insert(T item, int priority)
         {
             var seq = Interlocked.Increment(ref _seqGen);
@@ -30,9 +21,7 @@ namespace MunicipalityApplicatiion.DataStructures
             HeapifyUp(_data.Count - 1);
         }
 
-        /// <summary>
-        /// Removes and returns the highest-priority item.
-        /// </summary>
+        // Removes and returns the highest-priority item.
         public T ExtractMax()
         {
             if (_data.Count == 0)
@@ -47,9 +36,7 @@ namespace MunicipalityApplicatiion.DataStructures
             return ret;
         }
 
-        /// <summary>
-        /// Returns the highest-priority item without removing it.
-        /// </summary>
+        // Returns the highest-priority item without removing it.
         public T Peek()
         {
             if (_data.Count == 0)
@@ -57,22 +44,20 @@ namespace MunicipalityApplicatiion.DataStructures
             return _data[0].item;
         }
 
-        /// <summary>
-        /// Removes all items from the queue.
-        /// </summary>
+        // Removes all items from the queue.
         public void Clear() => _data.Clear();
 
         // Internal helpers
-
         private static bool Greater((T item, int priority, long seq) a,
                                     (T item, int priority, long seq) b)
         {
-            // Higher priority first; if equal, earlier insertion wins
+            // Higher priority first
             if (a.priority != b.priority)
                 return a.priority > b.priority;
             return a.seq < b.seq;
         }
 
+        // Heapify methods
         private void HeapifyUp(int i)
         {
             while (i > 0)
@@ -84,6 +69,7 @@ namespace MunicipalityApplicatiion.DataStructures
             }
         }
 
+        // Heapify down from index i
         private void HeapifyDown(int i)
         {
             while (true)
@@ -97,21 +83,15 @@ namespace MunicipalityApplicatiion.DataStructures
             }
         }
 
-        /// <summary>
-        /// Creates a shallow clone of the priority queue (internal items are not cloned).
-        /// Useful to perform destructive operations (ExtractMax) on a clone.
-        /// </summary>
+        // Creates a clone of the priority queue
         public PriorityQueue<T> Clone()
         {
             var q = new PriorityQueue<T>();
-            // copy internal array (shallow copy of tuples)
             q._data.AddRange(_data);
             return q;
         }
 
-        /// <summary>
-        /// Returns an ordered list (non-destructive) of items from highest to lowest priority.
-        /// </summary>
+        // Returns an ordered list of items from highest to lowest priority.
         public List<T> ToOrderedList()
         {
             var clone = Clone();

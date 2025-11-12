@@ -3,11 +3,9 @@ using System.Collections.Generic;
 
 namespace MunicipalityApplicatiion.DataStructures
 {
-    // Lightweight undirected, weighted graph with BFS traversal.
-    // Nodes are stored as values of type T; internally we index them as ints.
     public class Graph<T>
     {
-        // Edge for MST output (optional).
+        // Edge for MST output.
         public class Edge
         {
             public int U;
@@ -19,7 +17,7 @@ namespace MunicipalityApplicatiion.DataStructures
         private readonly List<List<(int v, double w)>> _adj = new();
         private readonly Dictionary<T, int> _index = new();
 
-        // Adds a node if it doesn't exist and returns its index.
+        // Adds a node with the given value, returns its index.
         public int AddNode(T value)
         {
             if (_index.TryGetValue(value, out var idx)) return idx;
@@ -30,7 +28,7 @@ namespace MunicipalityApplicatiion.DataStructures
             return idx;
         }
 
-        // Convenience: add an undirected edge by node values.
+        // Adds an undirected edge between nodes with values a and b.
         public void AddUndirected(T a, T b, double w)
         {
             int u = AddNode(a);
@@ -45,7 +43,7 @@ namespace MunicipalityApplicatiion.DataStructures
             _adj[v].Add((u, w));
         }
 
-        // Breadth-first traversal by start index, yields node values.
+        // Performs BFS starting from the node at index 'start'.
         public IEnumerable<T> BfsFrom(int start)
         {
             if (_nodes.Count == 0 || start < 0 || start >= _nodes.Count)
@@ -63,7 +61,7 @@ namespace MunicipalityApplicatiion.DataStructures
                 yield return _nodes[u];
 
                 if (u < 0 || u >= _adj.Count)
-                    continue; // safety check
+                    continue; 
 
                 foreach (var (v, _) in _adj[u])
                 {
@@ -76,9 +74,7 @@ namespace MunicipalityApplicatiion.DataStructures
             }
         }
 
-        // OPTIONAL: Minimum Spanning Tree (Prim).
-        // Requires .NET 6+ for System.Collections.Generic.PriorityQueue<,>.
-        // Delete this method if you don't want MST.
+        // Computes the Minimum Spanning Tree using Prim's algorithm.
         public List<Edge> MinimumSpanningTree()
         {
             int n = _nodes.Count;

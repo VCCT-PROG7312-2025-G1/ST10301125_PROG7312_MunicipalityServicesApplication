@@ -14,12 +14,13 @@ namespace MunicipalityApplicatiion.UI
         private readonly ListView lv = new();
         private readonly RichTextBox rtbDetails = new();
         private Button btnBack;
+        private PictureBox pbLogo;
 
         public ViewReports(ServiceRequestRepository repo)
         {
             _repo = repo ?? throw new ArgumentNullException(nameof(repo));
 
-            // --- Window styling to match your app ---
+            // Form
             Text = "View Submitted Reports";
             MinimumSize = new Size(900, 700);
             Size = new Size(1000, 700);
@@ -27,21 +28,33 @@ namespace MunicipalityApplicatiion.UI
             StartPosition = FormStartPosition.CenterScreen;
             FormBorderStyle = FormBorderStyle.FixedSingle;
 
-            // --- Header ---
+            // Logo
+            pbLogo = new PictureBox
+            {
+                Image = MunicipalityApplicatiion.Properties.Resources.MunicipalityCover,
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                Width = 80,
+                Height = 80,
+                Location = new Point(20, 5)
+            };
+            Controls.Add(pbLogo);
+
+            // Header 
             lblTitle.Text = "Submitted Reports";
             lblTitle.Font = new Font("Verdana", 20, FontStyle.Bold);
             lblTitle.AutoSize = true;
-            lblTitle.Location = new Point(24, 18);
+            lblTitle.Location = new Point(pbLogo.Right + 15, 18);
 
-            // --- Search bar ---
+            // Search bar 
             txtSearchId.PlaceholderText = "Paste Report ID (GUID)…";
             txtSearchId.Font = new Font("Verdana", 9);
-            txtSearchId.Location = new Point(24, 62);
+            txtSearchId.Location = new Point(pbLogo.Right + 15, lblTitle.Bottom + 10);
             txtSearchId.Width = 380;
 
+            // Find Button
             btnFind.Text = "Find";
             btnFind.Font = new Font("Verdana", 9, FontStyle.Bold);
-            btnFind.Location = new Point(412, 60);
+            btnFind.Location = new Point(txtSearchId.Right + 10, txtSearchId.Top);
             btnFind.Width = 80;
             btnFind.Click += (_, __) => FindById();
 
@@ -62,7 +75,7 @@ namespace MunicipalityApplicatiion.UI
 
             btnBack.Click += (s, e) => Close();
 
-            // --- List (left) ---
+            // List (left)
             lv.Location = new Point(24, 100);
             lv.Size = new Size(480, 500);
             lv.View = View.Details;
@@ -74,7 +87,7 @@ namespace MunicipalityApplicatiion.UI
             lv.Columns.Add("Status", 80);
             lv.SelectedIndexChanged += (_, __) => ShowSelected();
 
-            // --- Details (right) ---
+            // Details (right)
             rtbDetails.Location = new Point(520, 100);
             rtbDetails.Size = new Size(440, 500);
             rtbDetails.ReadOnly = true;
@@ -89,6 +102,7 @@ namespace MunicipalityApplicatiion.UI
             Activated += (_, __) => Reload(); // refresh when returning to this window
         }
 
+        // Load/refresh list
         private void Reload()
         {
             var items = _repo.All()
@@ -105,15 +119,16 @@ namespace MunicipalityApplicatiion.UI
             if (lv.Items.Count > 0) { lv.Items[0].Selected = true; }
         }
 
+        // Back button click event handler
         private void btnBack_Click(object sender, EventArgs e)
         {
-            this.Hide(); // Hide the ReportIssue form
+            this.Hide(); 
 
-            // Create a new Main Menu instance
             MainMenu mainMenu = new MainMenu();
-            mainMenu.Show(); // show the main menu
+            mainMenu.Show(); 
         }
 
+        // Show details of selected report
         private void ShowSelected()
         {
             if (lv.SelectedItems.Count == 0) { rtbDetails.Clear(); return; }
@@ -131,6 +146,7 @@ namespace MunicipalityApplicatiion.UI
             rtbDetails.AppendText(req.Description ?? "");
         }
 
+        // Find report by ID
         private void FindById()
         {
             var id = txtSearchId.Text?.Trim();

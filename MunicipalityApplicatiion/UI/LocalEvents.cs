@@ -1,11 +1,14 @@
-﻿using System;
+﻿using MunicipalityApplicatiion.Models;
+using MunicipalityApplicatiion.Repositories;
+using MunicipalityApplicatiion.Utils;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using MunicipalityApplicatiion.Models;
-using MunicipalityApplicatiion.Repositories;
 using System.Windows.Forms.VisualStyles;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace MunicipalityApplicatiion.UI
 {
@@ -42,25 +45,41 @@ namespace MunicipalityApplicatiion.UI
         private void InitializeUI()
         {
 
-            // Heading
+            // Logo PictureBox
+            PictureBox pbLogo = new PictureBox
+            {
+                Image = MunicipalityApplicatiion.Properties.Resources.MunicipalityCover, 
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                Width = 80,
+                Height = 80,
+                Location = new Point(20, 20)
+            };
+
+            // Heading Label
             lblHeading = new Label
             {
                 Text = "Local Events && Announcements",
                 Font = new Font("Verdana", 20, FontStyle.Bold),
                 BackColor = Color.OldLace,
                 ForeColor = Color.FromArgb(50, 50, 50),
-                Location = new Point(25, 33),
+                Location = new Point(pbLogo.Right + 20, 30), 
                 AutoSize = true
             };
-            // Sub-heading
+
+            // Sub-heading Label
             lblSubHeading = new Label
             {
                 Text = "Discover our latest events and announcements",
                 Font = new Font("Verdana", 9, FontStyle.Italic),
                 ForeColor = Color.Black,
-                Location = new Point(34, 74),
+                Location = new Point(pbLogo.Right + 20, lblHeading.Bottom + 10), 
                 AutoSize = true
             };
+
+            // Add controls to form
+            Controls.Add(pbLogo);
+            Controls.Add(lblHeading);
+            Controls.Add(lblSubHeading);
 
             // Back Button
             btnBack = new Button
@@ -155,7 +174,7 @@ namespace MunicipalityApplicatiion.UI
                 Location = new Point(20, searchPanel.Bottom + 10),
                 Size = new Size(650, this.ClientSize.Height - searchPanel.Bottom - 40),
                 AutoScroll = true,
-                WrapContents = false, // vertical scroll
+                WrapContents = false,
                 FlowDirection = FlowDirection.LeftToRight,
                 BackColor = Color.White,
                 Padding = new Padding(5)
@@ -212,6 +231,8 @@ namespace MunicipalityApplicatiion.UI
             foreach (var c in _repo.Categories) cmbCategory.Items.Add(c);
             cmbCategory.SelectedIndex = 0;
         }
+
+        private readonly SearchTrack _tracker = new();
 
         // Event card panel that has the seeded examples 
         private void RefreshEventList(IEnumerable<EventItem> events)
@@ -299,19 +320,30 @@ namespace MunicipalityApplicatiion.UI
                 "Event Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        // Search button logic 
+        // Search button logic
         private void BtnSearch_Click(object sender, EventArgs e)
         {
             string query = txtSearch.Text.Trim();
-            string category = cmbCategory.SelectedIndex > 0 ? cmbCategory.SelectedItem.ToString() : null;
-            DateTime? dateFilter = dtpDate.Value.Date == DateTime.Today ? null : dtpDate.Value.Date;
+            string category = (cmbCategory.SelectedIndex > 0)
+                ? cmbCategory.SelectedItem.ToString().Trim()
+                : null; // treat null as All
 
-            var results = _repo.Search(query, category, dateFilter);
+            DateTime? selectedDate = null;
+            if (dtpDate.Value.Date != DateTime.Today)
+                selectedDate = dtpDate.Value.Date;
+
+            var results = _repo.Search(query, category, selectedDate);
+
+            if (!results.Any())
+            {
+                MessageBox.Show("No matching events found.", "Search", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
             RefreshEventList(results);
-            ShowRecommendations();
+            RefreshRecommendations();
         }
 
-        // Recommendations based on the data structures features 
+        // Displays recommendations based on user interactions
         private void ShowRecommendations()
         {
             lbRecommendations.Items.Clear();
@@ -343,7 +375,27 @@ namespace MunicipalityApplicatiion.UI
             txtSearch.Text = titleWord;
             BtnSearch_Click(this, EventArgs.Empty);
         }
-      
+
+        // Refreshes recommendations based on user interactions
+        private void RefreshRecommendations()
+        {
+            lbRecommendations.Items.Clear();
+
+            var recommended = _repo.Recommend(5).ToList();
+
+            if (recommended.Count == 0)
+            {
+                lbRecommendations.Items.Add("No recommendations yet. Try searching to personalize!");
+                return;
+            }
+
+            lbRecommendations.Items.Add("Recommended for You:");
+            foreach (var ev in recommended)
+            {
+                lbRecommendations.Items.Add($"• {ev.EventTitle} ({ev.EventCategory}, {ev.EventDate:MMM dd})");
+            }
+        }
+
     }
 }
 

@@ -62,12 +62,14 @@ namespace MunicipalityApplicatiion.Forms
             grid.ColumnHeadersDefaultCellStyle = header;
         }
 
+        // Load data when shown
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
             RefreshGrid();
         }
 
+        // Show Top Priority Requests
         private void btnTopPriority_Click(object? sender, EventArgs e)
         {
             var top = _index.MostUrgent(5);
@@ -76,28 +78,30 @@ namespace MunicipalityApplicatiion.Forms
             foreach (var r in top)
                 _binding.Add(r);
 
-            // Optional: show analytics or message
+            // Analytics
             lstInfo.Items.Clear();
             lstInfo.Items.Add($"Showing Top {top.Count()} Most Urgent Requests");
 
             RefreshInsights();
         }
 
+        // Refresh data when activated
         protected override void OnActivated(EventArgs e)
         {
             base.OnActivated(e);
             RefreshGrid();
         }
 
+        // Navigate back to Main Menu
         private void btnBack_Click(object sender, EventArgs e)
         {
-            this.Hide(); // Hide the ReportIssue form
+            this.Hide(); 
 
-            // Create a new Main Menu instance
             MainMenu mainMenu = new MainMenu();
-            mainMenu.Show(); // show the main menu
+            mainMenu.Show(); 
         }
 
+        // Refresh grid data with optional filtering
         private void RefreshGrid()
         {
             _binding.Clear();
@@ -118,17 +122,18 @@ namespace MunicipalityApplicatiion.Forms
             RefreshInsights();
         }
 
+        // Show analytics insights
         private void RefreshInsights()
         {
             lstInfo.Items.Clear();
 
-            // ===== 1️⃣ Total Requests =====
+            // Total Requests
             var all = _index.All().ToList();
             lstInfo.Items.Add($"Total Requests: {all.Count}");
 
             if (all.Count > 0)
             {
-                // ===== 2️⃣ Oldest / Newest Request (AVL Tree by CreatedAt) =====
+                // Oldest and Newest Requests
                 var ordered = _index.InOrderByCreatedDate().ToList();
                 var oldest = ordered.First();
                 var newest = ordered.Last();
@@ -136,7 +141,7 @@ namespace MunicipalityApplicatiion.Forms
                 lstInfo.Items.Add($"Oldest Request: {oldest.Title} ({oldest.CreatedAt:g})");
                 lstInfo.Items.Add($"Newest Request: {newest.Title} ({newest.CreatedAt:g})");
 
-                // ===== 3️⃣ Requests per Status (using LINQ on _all) =====
+                // Requests by Status
                 var statusGroups = all
                     .GroupBy(r => r.Status)
                     .OrderBy(g => g.Key)
@@ -147,7 +152,7 @@ namespace MunicipalityApplicatiion.Forms
                 foreach (var g in statusGroups)
                     lstInfo.Items.Add($"  • {g.Key}: {g.Count()} request(s)");
 
-                // ===== 4️⃣ Top Urgent Requests (Priority Queue) =====
+                // Urgent Requests
                 var topUrgent = _index.MostUrgent(5).ToList();
                 if (topUrgent.Count > 0)
                 {
@@ -157,7 +162,7 @@ namespace MunicipalityApplicatiion.Forms
                         lstInfo.Items.Add($"  • {u.Title} (Priority {u.Priority})");
                 }
 
-                // ===== 5️⃣ Connected Locations (Graph BFS) =====
+                // Connected Locations via BFS
                 var bfsLocations = _index.AreaBfs().ToList();
                 if (bfsLocations.Any())
                 {
@@ -166,7 +171,7 @@ namespace MunicipalityApplicatiion.Forms
                     lstInfo.Items.Add("  " + string.Join(" → ", bfsLocations));
                 }
 
-                // ===== 6️⃣ Minimum Spanning Tree Edges (Graph) =====
+                // Minimum Spanning Tree Edges
                 var mstEdges = _index.AreaMst().ToList();
                 if (mstEdges.Any())
                 {
@@ -176,7 +181,7 @@ namespace MunicipalityApplicatiion.Forms
                         lstInfo.Items.Add($"  {e.U} ↔ {e.V} (w={e.W})");
                 }
 
-                // ===== 7️⃣ Titles in Alphabetical Order (RBT) =====
+                // Alphabetical Titles
                 lstInfo.Items.Add("");
                 lstInfo.Items.Add("Requests by Title (A-Z):");
                 var titles = all.Select(r => r.Title ?? string.Empty).OrderBy(t => t).ToList();
@@ -189,6 +194,7 @@ namespace MunicipalityApplicatiion.Forms
             }
         }
 
+        // Track request by ID
         private void TrackById()
         {
             var id = txtSearchId.Text?.Trim();
@@ -200,9 +206,8 @@ namespace MunicipalityApplicatiion.Forms
                 MessageBox.Show("Not found.");
         }
 
+        // Handle Find button click
         private void btnFind_Click(object? sender, EventArgs e) => TrackById();
-
-        // Only keep this if you actually have a Back button on the form
        
     }
 }

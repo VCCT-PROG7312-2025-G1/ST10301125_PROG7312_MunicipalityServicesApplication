@@ -50,8 +50,10 @@
             label1 = new Label();
             lblEngagement = new Label();
             label2 = new Label();
+            pictureBox1 = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)picUpload).BeginInit();
             panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // textBox1
@@ -59,7 +61,7 @@
             textBox1.BackColor = Color.OldLace;
             textBox1.BorderStyle = BorderStyle.None;
             textBox1.Font = new Font("Verdana", 20F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            textBox1.Location = new Point(25, 33);
+            textBox1.Location = new Point(128, 33);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(519, 35);
@@ -72,7 +74,7 @@
             textBox2.BackColor = Color.OldLace;
             textBox2.BorderStyle = BorderStyle.None;
             textBox2.Font = new Font("Verdana", 9F, FontStyle.Italic);
-            textBox2.Location = new Point(34, 74);
+            textBox2.Location = new Point(138, 74);
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(532, 15);
             textBox2.TabIndex = 1;
@@ -284,6 +286,18 @@
             label2.Text = "Your Progress:";
             label2.Click += label2_Click;
             // 
+            // pictureBox1
+            // 
+            pictureBox1.BackColor = Color.Transparent;
+            pictureBox1.Image = Properties.Resources.MunicipalityCover;
+            pictureBox1.Location = new Point(34, 22);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(88, 83);
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.TabIndex = 1935;
+            pictureBox1.TabStop = false;
+            pictureBox1.Click += pictureBox1_Click_1;
+            // 
             // ReportIssue
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -305,12 +319,14 @@
             Controls.Add(Location);
             Controls.Add(textBox2);
             Controls.Add(textBox1);
+            Controls.Add(pictureBox1);
             Name = "ReportIssue";
             Text = "Report An Issue";
             Load += ReportIssue_Load;
             ((System.ComponentModel.ISupportInitialize)picUpload).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -337,5 +353,6 @@
         private ListBox listAttachments;
         private Label lblEngagement;
         private Label label2;
+        private PictureBox pictureBox1;
     }
 }
